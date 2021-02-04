@@ -7,8 +7,10 @@ class App extends React.Component {
     countries : [],
     lives : 3,
     questions : [],
-    currentQuestion : 0,
-    score : 0
+    currentQuestion: {},
+    currentQuestionNumber : 0,
+    score : 0,
+    phase : 1
   }
 
   componentDidMount() {
@@ -16,10 +18,11 @@ class App extends React.Component {
     .then(res => {
       this.setState({
         countries: res.data
+      },
+      () => {
+        this.initializeQuestions();
       });
-    }).then(() => {
-      this.initializeQuestions();
-    })
+    });
   }
 
   shuffle = (arr) => {
@@ -84,15 +87,59 @@ class App extends React.Component {
     }
     this.shuffle(questions);
     this.setState({
-      questions
+      questions : questions, 
+      currentQuestion : questions[0]
     });
-    console.log(this.state.questions);
+  }
+
+  startQuiz = () => {
+    this.setState({
+      init : 0, 
+      currentQuestionNumber: 0,
+      score: 0,
+      currentQuestion: this.state.questions[this.state.currentQuestionNumber],
+      phase : 2
+    })
+  }
+
+  correct = () => {
+    let newScore = this.state.score + 1;
+    let newQuestionNumber = this.state.currentQuestionNumber + 1;
+    console.log(newScore, newQuestionNumber);
+    this.setState({
+      score: newScore,
+      currentQuestionNumber: newQuestionNumber
+    })
+  }
+
+  incorrect = () => {
+    this.setState({
+      lives: this.state.lives - 1.0,
+      currentQuestionNumber: this.state.currentQuestionNumber + 1.0
+    })
+  }
+
+  proceed = () => {
+    this.setState({
+      currentQuestion: this.state.questions[this.state.currentQuestionNumber]
+    })
   }
 
   render() {
     return (
       <div className='main'>
-        <QuizCard lives = {this.state.lives} question = {this.state.questions[this.state.currentQuestion]} />
+        <QuizCard 
+          btnMsg = {
+            (this.state.lives===0 || this.state.currentQuestion===10) ? 'Results' : 'Next'
+          } 
+          startQuiz = {this.startQuiz} 
+          lives = {this.state.lives} 
+          question = {this.state.currentQuestion} 
+          correct = {this.correct}
+          incorrect = {this.incorrect}
+          proceed = {this.proceed}
+          phase = {this.state.phase}
+        />
       </div>
     )
   }
