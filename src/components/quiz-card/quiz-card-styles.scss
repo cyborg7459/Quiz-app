@@ -1,0 +1,61 @@
+.quiz-card {
+    background: #fff;
+    color: #152b75;
+    padding: 25px;
+    border-radius: 20px;
+    width: 450px;
+    position: relative;
+
+    .globe {
+        position: absolute;
+        transform: scale(0.25);
+        right: -220px;
+        top: -260px;
+    }
+
+    h2 {
+        margin-bottom: 40px;
+        margin-top: 70px;
+    }
+
+    .option {
+        border: 1px solid #6f81bd;
+        color: #6f81bd;
+        margin: 20px 0px;
+        padding: 14px 25px;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 400;
+        cursor: pointer;
+        transition: all ease 0.5s;
+
+        &:hover {
+            background-color: #ffb83d;
+            color: white;
+            transform: scale(1.03);
+            border: 0;
+        }
+
+        .option-value {
+            margin-right: 50px;
+        }
+    }
+
+    .lives-remaining {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 50px;
+
+        #hearts {
+            display: flex;
+            padding: 0!important;
+            margin: 0!important;
+            width: 100px;
+        }
+
+        .heart {
+            width: 20px;
+            margin: 0px 5px;
+        }
+    }
+}

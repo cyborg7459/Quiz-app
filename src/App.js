@@ -1,9 +1,11 @@
 import React from 'react';
+import QuizCard from './components/quiz-card/quiz-card';
 const axios = require('axios');
 
 class App extends React.Component {
   state = {
-    countries : []
+    countries : [],
+    lives : 3
   }
   componentDidMount() {
     axios.get('https://restcountries.eu/rest/v2/all?fields=name;capital;flag')
@@ -16,9 +18,7 @@ class App extends React.Component {
   render() {
     return (
       <div className='main'>
-        <h1> 
-          {this.state.countries.length}
-        </h1>
+        <QuizCard lives={this.state.lives} />
       </div>
     )
   }
