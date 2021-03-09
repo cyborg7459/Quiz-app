@@ -115,7 +115,6 @@ class QuizCard extends React.Component {
             return (
                 <div className="quiz-card-container">
                     <div className="quiz-card">
-                        <img className='globe' src={globe} alt="globe"/>
                         <img className='mt-5 mb-2 winner' src={winners} alt="winners"/>
                         <h1 className='text-center my-0' id='score' onClick = {() => {
                             this.props.startQuiz();
