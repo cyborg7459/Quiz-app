@@ -6,7 +6,8 @@ class QuizCard extends React.Component {
 
     state = {
         lives: [],
-        phase: 1
+        phase: 1,
+        selected: ''
     }
 
     componentDidMount() {
@@ -19,60 +20,23 @@ class QuizCard extends React.Component {
             phase : this.props.phase
         })
 
-        
-    }
-
-    // initializeOptions = () => {
-    //     setInterval(() => {
-    //         document.querySelectorAll('.option').forEach(option => {
-    //             option.addEventListener('click', () => {
-    //                 if(option.attributes.value.value === this.props.question.correctAnswer) {
-    //                     option.style.backgroundColor = '#29ff49';
-    //                     option.style.border = 'none';
-    //                     option.style.color = 'white';
-    //                     this.props.correct();
-    //                 }
-    //                 else {
-    //                     option.style.backgroundColor = '#f22424';
-    //                     option.style.border = 'none';
-    //                     option.style.color = 'white';
-    //                     document.querySelectorAll('.option').forEach(option => {
-    //                         if(option.attributes.value.value === this.props.question.correctAnswer) {
-    //                             option.style.backgroundColor = '#29ff49';
-    //                             option.style.border = 'none';
-    //                             option.style.color = 'white';
-    //                         }
-    //                     });
-    //                     // this.props.incorrect();
-    //                 }
-
-    //                 this.setState({
-    //                     answered : 1
-    //                 })
-    //             })
-    //         })
-    //     }, 100);
-    // }
-
-    disableOptions = () => {
         document.querySelectorAll('.option').forEach(el => {
-            el.addEventListener('click', e => {
-                e.preventDefault();
-            });
+            el.disabled = true;
         })
     }
 
-    checkAnswer = (el, option) => {
-        this.disableOptions();
-        this.setState({
-            answered : 1
+    disableBtns = () => {
+        document.querySelectorAll('button').forEach(btn => {
+            btn.disabled = true;
         })
-        if(option === this.props.question.correctAnswer) {
-            el.style.backgroundColor = '#29ff49';
-            el.style.border = 'none';
-            el.style.color = 'white';
+    }
+
+    checkAnswer = (option) => {
+        this.disableBtns();
+        if(option === this.props.question.correctAnswer)
             this.props.correct();
-        }
+        else
+            alert('No');
     }
 
     render() {
@@ -102,17 +66,13 @@ class QuizCard extends React.Component {
                         {
                             this.props.question.options.map((option, idx) => {
                                 return (
-                                    <div onClick = {e => {
-                                            e.stopPropagation();
-                                            this.checkAnswer(document.getElementById(`option${idx+1}`), option)
-                                        }} 
-                                        id = {`option${idx+1}`}
-                                        key={idx} 
-                                        value = {option} 
-                                        className="option">
+                                    <button onClick={(e) => {
+                                        e.stopPropagation();
+                                        this.checkAnswer(option)
+                                        }} className='option btn-block text-left'>
                                         <span>{idx+1}</span>
-                                        <span className='text-center option-value'>{option}</span>
-                                    </div>
+                                        <span className='option-value'>{option}</span>
+                                    </button>
                                 )
                             })
                         }

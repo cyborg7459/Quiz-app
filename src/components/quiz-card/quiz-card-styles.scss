@@ -29,8 +29,18 @@
         margin-top: 70px;
     }
 
+    .next-btn {
+        background-color: #001c42;
+        padding: 15px 0px;
+        color: white;
+        border-radius: 15px;
+        font-size: 1.2rem;
+        margin-top: 35px;
+    }
+
     .option {
         border: 1px solid #6f81bd;
+        background-color: #fff;
         color: #6f81bd;
         margin: 20px 0px;
         padding: 14px 25px;
@@ -40,25 +50,19 @@
         cursor: pointer;
         transition: all ease 0.5s;
 
+        &:disabled {
+            cursor: not-allowed;
+        }
+        
         &:hover {
-            background-color: #ffb83d;
+            background-color: #ffb83d!important;
             color: white;
-            transform: scale(1.03);
             border: 0;
         }
-
+    
         .option-value {
             margin-left: 50px;
         }
-    }
-
-    .next-btn {
-        background-color: #001c42;
-        padding: 15px 0px;
-        color: white;
-        border-radius: 15px;
-        font-size: 1.2rem;
-        margin-top: 35px;
     }
 
     .lives-remaining {

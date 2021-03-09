@@ -14,7 +14,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('https://restcountries.eu/rest/v2/all?fields=name;capital;flag')
+    axios.get('https://obscure-mesa-98003.herokuapp.com/https://restcountries.eu/rest/v2/all?fields=name;capital;flag')
     .then(res => {
       this.setState({
         countries: res.data
@@ -128,18 +128,7 @@ class App extends React.Component {
   render() {
     return (
       <div className='main'>
-        <QuizCard 
-          btnMsg = {
-            (this.state.lives===0 || this.state.currentQuestion===10) ? 'Results' : 'Next'
-          } 
-          startQuiz = {this.startQuiz} 
-          lives = {this.state.lives} 
-          question = {this.state.currentQuestion} 
-          correct = {this.correct}
-          incorrect = {this.incorrect}
-          proceed = {this.proceed}
-          phase = {this.state.phase}
-        />
+       <h1>Hello World</h1>
       </div>
     )
   }
