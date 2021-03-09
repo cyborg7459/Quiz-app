@@ -70,7 +70,7 @@ class QuizCard extends React.Component {
         if(this.props.phase === 0) {
             return (
                 <div className="quiz-card-container">
-                    <h1 className='mb-5'>COUNTRY QUIZ</h1>
+                    <h1 className='mb-5 text-left'>COUNTRY QUIZ</h1>
                     <div className="quiz-card">
                         <img className='globe' src={globe} alt="globe"/>
                         <h1 className='text-center' id='start' onClick = {() => {
@@ -116,8 +116,8 @@ class QuizCard extends React.Component {
                 <div className="quiz-card-container">
                     <div className="quiz-card">
                         <img className='globe' src={globe} alt="globe"/>
-                        <img className='mt-5 mb-4' src={winners} alt="winners"/>
-                        <h1 className='text-center my-0' id='start' onClick = {() => {
+                        <img className='mt-5 mb-2 winner' src={winners} alt="winners"/>
+                        <h1 className='text-center my-0' id='score' onClick = {() => {
                             this.props.startQuiz();
                         }}><h1 className='mb-0'>Your score</h1>{this.props.score}</h1>
                         <button onClick={() => {
