@@ -23,18 +23,14 @@ class App extends React.Component {
     });
   }
 
-  startQuiz = () => {
-    this.startGame();
-    this.setState({
-      currentState : 1
-    })
-  }
-
   startGame = () => {
     this.setState({
       currentScore : 0,
       currentLives : 3,
-      currentState : 1
+      currentState : 1,
+      answered : false,
+      btnDisabled : true,
+      buttonMessage : "Next question"
     });
     this.generateQuestion();
   }

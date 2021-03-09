@@ -120,7 +120,9 @@ class QuizCard extends React.Component {
                         <h1 className='text-center my-0' id='start' onClick = {() => {
                             this.props.startQuiz();
                         }}><h1 className='mb-0'>Your score</h1>{this.props.score}</h1>
-                        <button className='my-4' id='new-quiz'>New quiz</button>
+                        <button onClick={() => {
+                            this.props.startQuiz();
+                        }} className='my-4' id='new-quiz'>New quiz</button>
                     </div>
                 </div>
             )
