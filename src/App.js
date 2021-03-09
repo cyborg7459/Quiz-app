@@ -4,131 +4,145 @@ const axios = require('axios');
 
 class App extends React.Component {
   state = {
-    countries : [],
-    lives : 3,
-    questions : [],
-    currentQuestion: {},
-    currentQuestionNumber : 0,
-    score : 0,
-    phase : 1
+    questionsList : null,
+    currentScore : 0,
+    currentLives : 3,
+    currentState : 0,
+    currentQuestion : null,
+    buttonMessage : "Next question",
+    answered : false,
+    btnDisabled : true
   }
 
   componentDidMount() {
     axios.get('https://obscure-mesa-98003.herokuapp.com/https://restcountries.eu/rest/v2/all?fields=name;capital;flag')
     .then(res => {
       this.setState({
-        countries: res.data
-      },
-      () => {
-        this.initializeQuestions();
+        questionsList : res.data
       });
     });
   }
 
-  shuffle = (arr) => {
-    const len = arr.length;
-    for(var i=0; i<len; i++) {
-      const idx = Math.floor(Math.random() * len);
-      let temp = arr[idx];
-      arr[idx] = arr[i];
-      arr[i] = temp;
-    }
-  }
-
-  initializeQuestions = () => {
-    let questions = [], selectedCountries = [];
-    while(questions.length < 5) {
-      let idx = Math.floor((Math.random()*this.state.countries.length));
-      if(!selectedCountries.find(el => el === idx)) {
-        selectedCountries.push(idx);
-        const country = this.state.countries[idx];
-        let options = [];
-        options.push(country.name);
-        let temp = idx;
-        for(let i=0; i<3; i++) {
-            temp+=60;
-            temp%=250;
-            let option = this.state.countries[temp].name;
-            options.push(option);
-        }
-        this.shuffle(options);
-        const question = {
-          questionStatement : `${country.capital} is the capital of`, 
-          correctAnswer : country.name, 
-          options
-        }
-        questions.push(question);
-      }
-    }
-    while(questions.length < 10) {
-      let idx = Math.floor((Math.random()*this.state.countries.length));
-      if(!selectedCountries.find(el => el === idx)) {
-        selectedCountries.push(idx);
-        const country = this.state.countries[idx];
-        const correctAnswer = country.name;
-        let options = [];
-        options.push(correctAnswer);
-        let temp = idx;
-        for(let i=0; i<3; i++) {
-            temp+=60;
-            temp%=250;
-            let option = this.state.countries[temp].name;
-            options.push(option);
-        }
-        this.shuffle(options);
-        const question = {
-          questionStatement : 'The shown flag belongs to', 
-          flag : country.flag,
-          correctAnswer, 
-          options
-        }
-        questions.push(question);
-      }
-    }
-    this.shuffle(questions);
-    this.setState({
-      questions : questions, 
-      currentQuestion : questions[0]
-    });
-  }
-
   startQuiz = () => {
+    this.startGame();
     this.setState({
-      init : 0, 
-      currentQuestionNumber: 0,
-      score: 0,
-      currentQuestion: this.state.questions[this.state.currentQuestionNumber],
-      phase : 2
+      currentState : 1
+    })
+  }
+
+  startGame = () => {
+    this.setState({
+      currentScore : 0,
+      currentLives : 3,
+      currentState : 1
+    });
+    this.generateQuestion();
+  }
+
+  generateQuestion = () => {
+    let question = {};
+    const idx = Math.floor(Math.random()*250);
+    const rand = Math.floor(Math.random()*100);
+    const selectedCountry = this.state.questionsList[idx];
+    if(rand%2 === 0) {
+      question.hasFlag = true;
+      question.statement = "Which country does this flag belong to?";
+      question.flag = selectedCountry.flag;
+    } else {
+      question.hasFlag = false;
+      question.statement = `${selectedCountry.capital} is the capital of?`;
+    }
+    question.correctAnswer = selectedCountry.name;
+    question.options = this.generateOptions(selectedCountry.name);
+    this.setState({
+      currentQuestion : question
+    })
+  }
+
+  generateOptions = (correctAnswer) => {
+    let options = [];
+    options.push(correctAnswer);
+    while(options.length !== 4) {
+      const idx = Math.floor(Math.random()*250);
+      const opt = this.state.questionsList[idx].name;
+      const x = options.find(el => el === opt);
+      if(!x) {
+        options.push(opt);
+      }
+    }
+    return this.shuffleOptions(options);
+  }
+
+  shuffleOptions = (options) => {
+    let count = 50;
+    while(count--) {
+      const idx1 = Math.floor(Math.random()*4);
+      const idx2 = Math.floor(Math.random()*4);
+      let temp = options[idx1];
+      options[idx1] = options[idx2];
+      options[idx2] = temp;
+    }
+    return options;
+  }
+
+  answered = () => {
+    this.setState({
+      answered : true,
+      btnDisabled : false
     })
   }
 
   correct = () => {
-    let newScore = this.state.score + 1;
-    let newQuestionNumber = this.state.currentQuestionNumber + 1;
-    console.log(newScore, newQuestionNumber);
     this.setState({
-      score: newScore,
-      currentQuestionNumber: newQuestionNumber
+      currentScore : this.state.currentScore+1,
+      answered : true
     })
   }
 
   incorrect = () => {
     this.setState({
-      lives: this.state.lives - 1.0,
-      currentQuestionNumber: this.state.currentQuestionNumber + 1.0
+      currentLives : this.state.currentLives-1,
+      answered : true
+    }, () => {
+      if(this.state.currentLives === 0) {
+        this.setState({
+          buttonMessage : "See result"
+        })
+      }
     })
   }
 
-  proceed = () => {
-    this.setState({
-      currentQuestion: this.state.questions[this.state.currentQuestionNumber]
-    })
+  next = () => {
+    if(this.state.currentLives > 0) {
+      this.generateQuestion();
+      this.setState({
+        answered : false,
+        btnDisabled : true
+      })
+    }
+    else 
+      this.setState({
+        currentState : 2
+      })
   }
 
   render() {
     return (
       <div className='main'>
-       <h1>Hello World</h1>
+        <QuizCard 
+          question = {this.state.currentQuestion}
+          phase = {this.state.currentState}
+          lives = {this.state.currentLives}
+          startQuiz = {this.startGame}
+          score = {this.state.currentScore}
+          correct = {this.correct}
+          incorrect = {this.incorrect}
+          buttonMessage = {this.state.buttonMessage}
+          isAnswered = {this.state.answered}
+          answered = {this.answered}
+          next = {this.next}
+          isButtonDisabled = {this.state.btnDisabled}
+        ></QuizCard>
       </div>
     )
   }

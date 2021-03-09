@@ -1,46 +1,73 @@
 import React from 'react';
 import './quiz-card-styles.scss';
-import globe from '../../gallery/globe.svg'
+import globe from '../../gallery/globe.svg';
+import winners from '../../gallery/winners.svg';
 
 class QuizCard extends React.Component {
-
-    state = {
-        lives: [],
-        phase: 1,
-        selected: ''
+    
+    checkAnswer = (e) => {
+        if(this.props.isAnswered) return;
+        this.props.answered();
+        const chosen = e.currentTarget.firstChild.nextSibling.innerText;
+        if(chosen === this.props.question.correctAnswer)
+            this.correctAnswer(e.currentTarget);
+        else 
+            this.incorrectAnswer(e.currentTarget);
     }
 
-    componentDidMount() {
-        let livesArr = [];
-        for(var i=0; i<this.props.lives; i++) {
-            livesArr.push(i);
-        }
-        this.setState({
-            lives : livesArr,
-            phase : this.props.phase
-        })
+    correctAnswer = (element) => {
+        element.style.backgroundColor = "#269131";
+        element.style.color = "#fff";
+        element.style.border = "none";
+        this.props.correct();
+        this.disableOptions();
+    }
 
+    incorrectAnswer = (element) => {
+        document.querySelectorAll('.option-value').forEach(el => {
+            const parent = el.parentElement;
+            if(el.innerHTML === this.props.question.correctAnswer) {
+                parent.style.backgroundColor = "#269131";
+                parent.style.color = "#fff";
+                parent.style.border = "none";
+            }
+        });
+        element.style.backgroundColor = "#d44626";
+        element.style.color = "#fff";
+        element.style.border = "none";
+        this.props.incorrect();
+        this.disableOptions();
+    }
+
+    disableOptions = () => {
         document.querySelectorAll('.option').forEach(el => {
             el.disabled = true;
+            el.classList.remove('changing');
+            el.classList.add('disabled');
         })
     }
 
-    disableBtns = () => {
-        document.querySelectorAll('button').forEach(btn => {
-            btn.disabled = true;
+    enableOptions = () => {
+        document.querySelectorAll('.option').forEach(el => {
+            el.disabled = false;
+            el.classList.remove('disabled');
+            el.classList.add('changing');
+            el.style.backgroundColor = "white";
+            el.style.color = "#6f81bd";
+            el.style.border = "1px solid #6f81bd";
+            el.addEventListener('click', (e) => {
+                this.checkAnswer(e);
+            })
         })
     }
 
-    checkAnswer = (option) => {
-        this.disableBtns();
-        if(option === this.props.question.correctAnswer)
-            this.props.correct();
-        else
-            alert('No');
+    proceed = () => {
+        this.props.next();
+        this.enableOptions();
     }
 
     render() {
-        if(this.props.phase === 1) {
+        if(this.props.phase === 0) {
             return (
                 <div className="quiz-card-container">
                     <h1 className='mb-5'>COUNTRY QUIZ</h1>
@@ -53,48 +80,47 @@ class QuizCard extends React.Component {
                 </div>
             )
         }
-        else if(this.props.phase === 2) {
+        else if(this.props.phase === 1) {
             return (
                 <div className="quiz-card-container">
                     <h1 className='mb-5'>COUNTRY QUIZ</h1>
                     <div className="quiz-card">
                         <img className='globe' src={globe} alt="globe"/>
-                        {this.props.question.flag ? (
+                        {this.props.question.hasFlag ? (
                             <img className='flag' src={this.props.question.flag} alt='flag'></img>
                         ) : null}
-                        <h2>{this.props.question.questionStatement}</h2>
+                        <h2 className='mb-2'>{this.props.question.statement}</h2>
                         {
                             this.props.question.options.map((option, idx) => {
                                 return (
-                                    <button onClick={(e) => {
-                                        e.stopPropagation();
-                                        this.checkAnswer(option)
-                                        }} className='option btn-block text-left'>
+                                    <button onClick = {e => this.checkAnswer(e)} className='my-2 option changing btn-block text-left' key={`option-${idx}`}>
                                         <span>{idx+1}</span>
                                         <span className='option-value'>{option}</span>
                                     </button>
                                 )
                             })
                         }
-                        {
-                            this.state.answered ? (
-                                <button onClick = {() => {this.props.proceed()}} className='next-btn btn-block'>
-                                    {this.props.btnMsg}
-                                </button>
-                            ) : null
-                        }
-                        <div className="lives-remaining">
-                            Lives remaining : 
-                            <div id="hearts"> 
-                                {
-                                    this.state.lives.map(num => {
-                                        return (
-                                            <img key={num} className='heart' src="https://www.flaticon.com/svg/vstatic/svg/1489/1489937.svg?token=exp=1612425025~hmac=56a0d7a1d4e264bb6d46dd7df944820b" alt="heart"/>
-                                        )
-                                    })
-                                }
-                            </div>   
+                        <button disabled={this.props.isButtonDisabled} onClick={() => {this.proceed()}} id='next-btn'> {this.props.buttonMessage} </button>
+                        <div className="text-right w-100 lives-remaining pr-3 mt-2">
+                            Lives remaining : {this.props.lives}   
                         </div>
+                        <div className="score-display w-100 text-right pr-3 mt-2">
+                            Current score : {this.props.score}
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div className="quiz-card-container">
+                    <div className="quiz-card">
+                        <img className='globe' src={globe} alt="globe"/>
+                        <img className='mt-5 mb-4' src={winners} alt="winners"/>
+                        <h1 className='text-center my-0' id='start' onClick = {() => {
+                            this.props.startQuiz();
+                        }}><h1 className='mb-0'>Your score</h1>{this.props.score}</h1>
+                        <button className='my-4' id='new-quiz'>New quiz</button>
                     </div>
                 </div>
             )
